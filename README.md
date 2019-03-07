@@ -1,5 +1,5 @@
 # SolrCloud helm chart
-The simple helm chart to deploy Solr cloud. Zookeeper cluster used by SolrCloud should be deployed separately, for instance, by [zookeeper-helm](https://github.com/frizner/zookeeper-helm). In this case several SolrCloud can use one Zookeeper cluster.
+The simple helm chart to deploy Solr cloud. Zookeeper cluster used by SolrCloud should be deployed separately, for instance, by [zookeeper-helm](https://github.com/frizner/zookeeper-helm). In this case several SolrClouds can use one Zookeeper cluster.
 ## Prerequisites
 To use the charts here, [Helm](https://helm.sh/) must be installed in your
 Kubernetes cluster. Setting up Kubernetes and Helm and is outside the scope
@@ -56,6 +56,7 @@ Do the following after deleting the chart release to clean up orphaned Persisten
 ```bash
 $ kubectl delete pvc -l solrcloud=solr01
 ```
+
 ##Configuration
 
 The following table lists some of the configurable parameters of the Solr chart and their default values.
