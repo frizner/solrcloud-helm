@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "solr.cloud-name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{ include "solr.labels" . | indent 4 | trim }}
+spec:
+  selector:
+    matchLabels:
+      {{ include "solr.selector" . | indent 6  | trim }}
+  serviceName: {{ template "solr.headless-service-name" . }}
+  replicas: {{ .Values.replicaCount }}
+  updateStrategy:
+    type: {{ .Values.updateStrategy.type }}
+  podManagementPolicy: {{ .Values.podManagementPolicy }}
+  template:
+    metadata:
+      labels:
+        {{ include "solr.labels" . | indent 8 | trim }}
+    spec:
+      securityContext:
+        runAsUser: {{ .Values.user }}
+        fsGroup: {{ .Values.group }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: {{ template "solr.name" . }}
+                    operator: In
+                    values:
+                    - {{ template "solr.cloud-name" . }}
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: solr
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        image: {{ .Values.image }}
+        env:
+        - name: SOLR_TIMEZONE
+          value: {{ .Values.solrTimeZone }}
+        - name: SOLR_JAVA_MEM
+          value: {{ .Values.solrJavaMem | quote}}
+        - name: SOLR_HOME
+          value: "/opt/data/solr/{{ template "solr.cloud-name" . }}"
+        - name: SOLR_PORT
+          value: "{{ .Values.port }}"
+        - name: ZK_HOST
+          value: {{ .Values.zkHost | quote }}
+        - name: ZKPATH
+          value: /{{ template "solr.cloud-name" . }}
+        - name: SOLR_INSTNAME
+          value: {{ template "solr.cloud-name" . }}
+        - name: SOLR_ZK_CREDS_AND_ACLS
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "solr.acl-name" . }}
+              key: zk-acl
+        - name: SOLR_OPTS
+          value: {{ .Values.solrOpts | quote }}
+        command: ["/bin/bash"]
+        args: ["/opt/solr/startsolr.sh"]
+        {{- if .Values.resources }}
+        resources:
+          {{ toYaml .Values.resources | indent 10 | trim }}
+        {{- end }}
+        ports:
+        - containerPort: {{ .Values.port }}
+          name: solr
+        {{- if .Values.livenessProbe }}
+        livenessProbe:
+          {{ toYaml .Values.livenessProbe | indent 10 | trim }}
+        {{- end }}
+        {{- if .Values.readinessProbe }}
+        readinessProbe:
+          {{ toYaml .Values.readinessProbe | indent 10 | trim }}
+        {{- end }}
+        volumeMounts:
+        - name: solrdata
+          mountPath: "/opt/data/solr/{{ template "solr.cloud-name" . }}"
+        - name: solr-start
+          mountPath: "/opt/solr/startsolr.sh"
+          subPath: "startsolr.sh"
+        - name: solr-security
+          mountPath: "/opt/solr/{{ template "solr.cloud-name" . }}/security.json"
+          subPath: "security.json"
+      volumes:
+        - name: solr-start
+          configMap:
+            name: solr-start
+        - name: solr-security
+          configMap:
+            name: {{ template "solr.security-config-map" . }}
+  volumeClaimTemplates:
+  - metadata:
+      name: solrdata
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.storage }}

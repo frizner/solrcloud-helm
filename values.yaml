@@ -1,0 +1,58 @@
+# Default values for solr-helm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 4
+port: 8983
+loadBalancer: Disabled
+loadBalancerPort: 7799
+storage: 20Gi
+user: 8983
+group: 8983
+imagePullPolicy: Always
+image: solr:7.6
+solrTimeZone: UTC
+solrJavaMem: "-Xms2g -Xmx3g"
+zkHost: zk-0.zk-hs,zk-1.zk-hs,zk-2.zk-hs
+solrOpts: ""
+
+zookeeper:
+  user: zksolr
+  password: zksolrpassw
+
+# https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+podDisruptionBudget:
+  maxUnavailable: 1
+
+updateStrategy:
+  type: RollingUpdate
+
+podManagementPolicy: OrderedReady
+
+resources:
+  requests:
+    memory: 4Gi
+    cpu: 1
+  limits:
+    memory: 8Gi
+    cpu: 2
+
+#livenessProbe:
+#  httpGet:
+#    path: /solr/admin/info/system
+#    port: 8983
+#  initialDelaySeconds: 30
+#  periodSeconds: 10
+#  timeoutSeconds: 5
+#  successThreshold: 1
+#  failureThreshold: 6
+#readinessProbe:
+#  httpGet:
+#    path: /solr/admin/info/system
+#    port: 8983
+#  initialDelaySeconds: 30
+#  periodSeconds: 10
+#  timeoutSeconds: 5
+#  successThreshold: 1
+#  failureThreshold: 6
+

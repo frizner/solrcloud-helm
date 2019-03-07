@@ -1,0 +1,10 @@
+Solr can be accessed via port {{ .Values.clientPort }} on the following DNS names from within your cluster:
+
+    {{ template "solr.cloud-name" . }}-[0..N].{{ template "solr.headless-service-name" . }}.{{ .Release.Namespace }}.svc.cluster.local
+    {{ template "solr.cloud-name" . }}-[0..N].{{ template "solr.headless-service-name" . }}.{{ .Release.Namespace }}
+    {{ template "solr.cloud-name" . }}-[0..N].{{ template "solr.headless-service-name" . }}
+
+To connect to one of your Solr nodes run the following commands:
+
+    export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ template "solr.cloud-name" . }}" -o jsonpath="{.items[0].metadata.name}")
+    kubectl exec -it $POD_NAME -- bash
