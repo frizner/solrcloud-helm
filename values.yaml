@@ -2,11 +2,11 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 4
+replicaCount: 2
 port: 8983
 loadBalancer: Disabled
 loadBalancerPort: 7799
-storage: 20Gi
+storage: 10Gi
 user: 8983
 group: 8983
 imagePullPolicy: Always
@@ -16,6 +16,11 @@ solrJavaMem: "-Xms2g -Xmx3g"
 zkHost: zk-0.zk-hs,zk-1.zk-hs,zk-2.zk-hs
 solrOpts: ""
 
+# Solr credentials by defaults
+username: solradmin
+password: S0lr@dmin
+
+# Zookeeper credentials to apply ACL on Zk node
 zookeeper:
   user: zksolr
   password: zksolrpassw
@@ -37,22 +42,21 @@ resources:
     memory: 8Gi
     cpu: 2
 
-#livenessProbe:
-#  httpGet:
-#    path: /solr/admin/info/system
-#    port: 8983
-#  initialDelaySeconds: 30
-#  periodSeconds: 10
-#  timeoutSeconds: 5
-#  successThreshold: 1
-#  failureThreshold: 6
-#readinessProbe:
-#  httpGet:
-#    path: /solr/admin/info/system
-#    port: 8983
-#  initialDelaySeconds: 30
-#  periodSeconds: 10
-#  timeoutSeconds: 5
-#  successThreshold: 1
-#  failureThreshold: 6
+livenessProbe:
+  httpGet:
+    path: /solr/admin/info/system
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 6
+readinessProbe:
+  httpGet:
+    path: /solr/admin/info/system
+    port: 8983
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 6
 
