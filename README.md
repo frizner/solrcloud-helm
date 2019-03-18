@@ -33,7 +33,7 @@ $ helm install \
 --set username=superuser \
 --set password=TestPassw \
 --name solr01 \
-./solr-helm-0.1.1/
+./solrcloud-helm-0.1.1/
 ```
 As result helm should deploy release `solr01` with changed default configuration. 
 The [configuration](#configuration) section lists the parameters that can be configured during the installation. Pay attention that `zkHost` parameters is set according to previous zookeeper deployment.
