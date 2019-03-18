@@ -63,16 +63,29 @@ Define the name of the pod disruption budget for solr
 {{/*
 Define the name of the security config map for solr
 */}}
-{{- define "solr.security-config-map" -}}
-{{- printf "%s-%s" .Release.Name "security" | trunc 63 | trimSuffix "-" -}}
+{{- define "solr.credentials-security-config-map" -}}
+{{- printf "%s-%s" .Release.Name "credentials-security-config-map" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
+{{/*
+Define the name of the security config map for solr
+*/}}
+{{- define "solr.security-config-map" -}}
+{{- printf "%s-%s" .Release.Name "security-config-map" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
 
 {{/*
 Define the name of the LoadBalancer service for solr
 */}}
 {{- define "solr.loadbalancer-service-name" -}}
 {{- printf "%s-%s" .Release.Name "lb" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Define the name of the config-map for startsolr.sh file
+*/}}
+{{- define "solr.start-config-map" -}}
+{{- printf "%s-%s" .Release.Name "start" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -88,6 +101,16 @@ solrcloud: {{ template "solr.cloud-name" . }}
 */}}
 {{- define "solr.labels" -}}
 app: {{ template "solr.name" . }}
+helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+solrcloud: {{ template "solr.cloud-name" . }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{/*
+  Define the labels that should be applied to post jobs in the chart
+*/}}
+{{- define "solr.postjoblabels" -}}
+app: {{ template "solr.name" . }}-postjob
 helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 solrcloud: {{ template "solr.cloud-name" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
