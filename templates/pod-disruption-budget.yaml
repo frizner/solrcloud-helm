@@ -1,0 +1,12 @@
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "solr.pod-disruption-budget-name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{ include "solr.labels" . | indent 4 | trim }}
+spec:
+  selector:
+    matchLabels:
+      {{ include "solr.selector" . | indent 6  | trim }}
+  maxUnavailable: {{ .Values.podDisruptionBudget.maxUnavailable }}

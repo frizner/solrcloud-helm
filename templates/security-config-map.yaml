@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "solr.security-config-map" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{ include "solr.labels" . | indent 4 | trim }}
+data:
+ security.json: |
+   {
+   "authentication":{
+      "blockUnknown": true,
+      "class":"solr.BasicAuthPlugin",
+      "credentials":{"{{ .Values.username }}": "GENERATEDHASH"}
+   },
+   "authorization":{
+      "class":"solr.RuleBasedAuthorizationPlugin",
+      "permissions":[{"name":"security-edit",
+   	  "role":"admin"}],
+      "user-role":{"{{ .Values.username }}":"admin"}
+   }}

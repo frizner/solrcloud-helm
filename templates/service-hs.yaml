@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "solr.headless-service-name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{ include "solr.labels" . | indent 4 | trim }}
+spec:
+  clusterIP: None
+  ports:
+    - port: {{ .Values.port }}
+      name: solr
+  selector:
+    {{ include "solr.selector" . | indent 4 | trim }}
