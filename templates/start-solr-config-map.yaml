@@ -10,7 +10,11 @@ data:
    #!/bin/bash
 
    #prepare ZK path and copy solr.xml, security.json
-   /opt/solr/server/scripts/cloud-scripts/zkcli.sh -cmd ls ${ZKPATH} -zkhost ${ZK_HOST} > /dev/null 2>&1 \
+   ( \
+        /opt/solr/server/scripts/cloud-scripts/zkcli.sh -cmd ls ${ZKPATH}/solr.xml -zkhost ${ZK_HOST} > /dev/null 2>&1 \
+        && \
+        /opt/solr/server/scripts/cloud-scripts/zkcli.sh -cmd ls ${ZKPATH}/security.json -zkhost ${ZK_HOST} > /dev/null 2>&1 \
+   ) \
    || \
    ( \
        # generate hash for security.json
